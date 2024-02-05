@@ -1,14 +1,36 @@
-const http = require('http');
-const express = require('express');
-const cors = require('cors');
-const socketIO = require('socket.io');
+import http from 'http';
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import { Server } from 'socket.io';
+import path from 'path';
+import {fileURLToPath} from 'url';
+
+//configure env
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const  __dirname = path.dirname(__filename);
 
 const app = express();
+//const io = new Server(server);
 
 const users=[{}];
 app.use(cors());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname , './client/build')));
+//rest api
+app.use('*' , function(req,res){
+    res.sendFile(path.join(__dirname , "./client/build/index.html"));
+})
 const server = http.createServer(app);
-const io = socketIO(server);
+//const io = socketIO(server);
+const io = new Server(server);
+
+
+
+
 
 io.on("connection" , (socket)=>{
     console.log("New Connection");
